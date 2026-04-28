@@ -1,0 +1,19 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  background: #1a56db;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}

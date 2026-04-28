@@ -1,0 +1,286 @@
+/* ================= OVERLAY (DESKTOP) ================= */
+
+.dialog-overlays {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* ================= FORM CARD ================= */
+
+.form-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  padding: 40px 50px;
+  box-sizing: border-box;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ================= TITLE ================= */
+
+.form-title {
+  color: #0369a1;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* ================= FORM GRID ================= */
+
+.registration-form {
+  /* display: grid;
+  grid-template-columns: 1fr 1fr; */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+/* ================= FORM GROUP ================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+/* ================= INPUTS ================= */
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #1a202c;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #38bdf8;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* ================= BUTTON ================= */
+
+.form-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.submit-btn {
+  background: #1044b0;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4);
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+}
+
+/* ================= CLOSE BUTTON ================= */
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 22px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.close-btn:hover {
+  color: #0f172a;
+}
+
+/* ================= ATTENDANCE DETAILS ================= */
+
+.attend-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 850px;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  padding: 40px 50px;
+  box-sizing: border-box;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ✅ GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Desktop */
+  gap: 16px;
+}
+
+/* ✅ CARD */
+.card {
+  border: 1px solid var(--gray-mid);
+  background: var(--gray-bg);
+  border-radius: 16px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* ICON */
+.icons {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+/* VALUE */
+.value {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+/* LABEL */
+.label {
+  font-size: 14px;
+  color: #777;
+}
+
+.image-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.image-preview-box {
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.image-preview-box img {
+  max-width: 90vw;
+  max-height: 70vh;
+  border-radius: 10px;
+}
+
+/* ================= MOBILE WRAPPER ================= */
+
+/* .mobile-form-wrapper {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+} */
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+  .dialog-overlays {
+    display: none;
+  }
+
+  .form-card {
+    background: transparent;
+    max-width: 100%;
+    border-radius: 0;
+    padding: 20px;
+    box-shadow: none;
+  }
+
+  .registration-form {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+
+  .form-title {
+    display: none;
+    font-size: 22px;
+  }
+  .close-btn {
+    display: none;
+  }
+  .attend-card {
+    border-radius: 0;
+    padding: 16px;
+    animation: fadeIn 0.3s ease;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Desktop */
+    gap: 16px;
+  }
+}
+
+/* ================= ANIMATION ================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
