@@ -64,6 +64,19 @@ async function checkTokenExpiresAPI() {
   }
 }
 
+async function fetchBranchLatLonAPI() {
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    const response = await axios.get(
+      `${BASE_URL}/branch-location/${user.branch_id}`
+    );
+    return response.data;
+  } catch (err) {
+    alert(err);
+  }
+}
+
 async function fetchHomePageAPI() {
   try {
     const token = localStorage.getItem('token');
@@ -375,6 +388,7 @@ export {
   forgetPasswordAPI,
   changePasswordAPI,
   checkTokenExpiresAPI,
+  fetchBranchLatLonAPI,
   fetchHomePageAPI,
   fetchProfileAPI,
   fetchAttendanceWMAPI,

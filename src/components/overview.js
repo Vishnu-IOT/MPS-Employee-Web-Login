@@ -3,6 +3,7 @@ import MobileNav from './mobilenav';
 import BottomNav from './BottomNav';
 import {
   fetchAttendanceWMAPI,
+  fetchBranchLatLonAPI,
   fetchHomePageAPI,
   fetchLiveLocationAddrAPI,
   storeMarkAttendanceAPI,
@@ -19,6 +20,7 @@ export const OverviewScreen = () => {
   const [wm, setWM] = useState('week');
   const [attendanceData, setAttendanceData] = useState([]);
   const [homeData, setHomeData] = useState(null);
+  const [distanceData, setDistanceData] = useState(null);
   const [time, setTime] = useState(new Date());
   const [loadingState, setLoadingState] = useState(false);
   const navigate = useNavigate();
@@ -40,6 +42,25 @@ export const OverviewScreen = () => {
   });
 
   const [openDialog, setOpenDialog] = useState(false);
+
+  const getDistanceInMeters = (lat1, lon1, lat2, lon2) => {
+    const R = 6371000;
+    const toRad = (value) => (value * Math.PI) / 180;
+
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  };
 
   const handleAttendance = async (capturedBlob) => {
     setSubmitting(true);
@@ -167,10 +188,12 @@ export const OverviewScreen = () => {
       try {
         const data = await fetchAttendanceWMAPI(wm);
         const data2 = await fetchHomePageAPI();
+        const data3 = await fetchBranchLatLonAPI();
         setHomeData(data2);
         setAttendanceData(
           Array.isArray(data?.attendance) ? data.attendance : []
         );
+        setDistanceData(data3);
 
         if (
           data2?.attendance?.break_in !== '--:--' &&
@@ -263,11 +286,40 @@ export const OverviewScreen = () => {
     const now = new Date();
     setActionTime(now);
     setActionType(type);
-    setOpenDialog(true);
+    setLoadingState(true);
 
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
+
+        const OFFICE_LAT = distanceData?.data.lat;
+        const OFFICE_LON = distanceData?.data.lon;
+        const MAX_DISTANCE = distanceData?.data.meter;
+        // console.log(OFFICE_LAT, OFFICE_LON, MAX_DISTANCE);
+
+        if (!OFFICE_LAT || !OFFICE_LON || !MAX_DISTANCE) {
+          setLoadingState(false);
+          alert('Office location not available');
+          return;
+        }
+
+        // if (accuracy > 50) {
+        //   alert('Low GPS accuracy, try again');
+        //   return;
+        // }
+
+        const distance = getDistanceInMeters(
+          OFFICE_LAT,
+          OFFICE_LON,
+          latitude,
+          longitude
+        );
+
+        if (distance > MAX_DISTANCE) {
+          setLoadingState(false);
+          alert(`You are too far from office (${Math.round(distance)} meters)`);
+          return;
+        }
 
         let updatedData = { ...checkData };
 
@@ -296,6 +348,10 @@ export const OverviewScreen = () => {
         }
 
         setCheckData(updatedData);
+
+        setLoadingState(false);
+
+        setOpenDialog(true);
 
         setLiveLocation('Fetching location...');
 
@@ -483,7 +539,9 @@ export const OverviewScreen = () => {
 
                 <div className="dialog-row">
                   <span className="icon">📍</span>
-                  <span>{liveLocation ? liveLocation : 'Fetching Location...'}</span>
+                  <span>
+                    {liveLocation ? liveLocation : 'Fetching Location...'}
+                  </span>
                 </div>
               </div>
 
