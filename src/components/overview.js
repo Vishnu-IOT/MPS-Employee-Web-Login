@@ -308,17 +308,21 @@ export const OverviewScreen = () => {
         //   return;
         // }
 
-        const distance = getDistanceInMeters(
-          OFFICE_LAT,
-          OFFICE_LON,
-          latitude,
-          longitude
-        );
+        if (type === 'checkin' || type === 'checkout') {
+          const distance = getDistanceInMeters(
+            OFFICE_LAT,
+            OFFICE_LON,
+            latitude,
+            longitude
+          );
 
-        if (distance > MAX_DISTANCE) {
-          setLoadingState(false);
-          alert(`You are too far from office (${Math.round(distance)} meters)`);
-          return;
+          if (distance > MAX_DISTANCE) {
+            setLoadingState(false);
+            alert(
+              `You are too far from office (${Math.round(distance)} meters)`
+            );
+            return;
+          }
         }
 
         let updatedData = { ...checkData };
