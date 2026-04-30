@@ -9,6 +9,7 @@ function ApplyLeave() {
 
   const [leave, setLeave] = useState({
     leave_date: '',
+    leave_type: '',
     duration: '',
     half_day: '',
     reason: '',
@@ -42,6 +43,7 @@ function ApplyLeave() {
         alert(response.message || 'Leave Created successfully!');
         setLeave({
           leave_date: '',
+          leave_type: '',
           duration: '',
           half_day: '',
           reason: '',
@@ -84,10 +86,27 @@ function ApplyLeave() {
             name="duration"
             value={leave.duration}
             onChange={handleChange}
+            required
           >
             <option value="">Select</option>
             <option value="1">Full Day</option>
             <option value="0.5">Half Day</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Leave Type</label>
+          <select
+            name="leave_type"
+            value={leave.leave_type || ''}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select</option>
+            {leave.duration === '1' && (
+              <option value="CASUAL">Casual Leave</option>
+            )}
+            <option value="LOP">Loss of Pay</option>
           </select>
         </div>
 
@@ -135,7 +154,7 @@ function ApplyLeave() {
           <button className="down-btn" onClick={() => navigate('/leave')}>
             <MdKeyboardArrowLeft />
           </button>
-          <h3 style={{ fontWeight: 600, fontSize:'16px' }}>Apply Leave</h3>
+          <h3 style={{ fontWeight: 600, fontSize: '16px' }}>Apply Leave</h3>
         </div>
       </div>
 

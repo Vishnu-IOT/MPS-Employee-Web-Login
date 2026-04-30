@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { BsPerson, BsSuitcase, BsSuitcase2 } from 'react-icons/bs';
 import { FiLogOut } from 'react-icons/fi';
 import { HiOutlineDocumentReport } from 'react-icons/hi';
-import { IoCalendarOutline, IoHomeOutline } from 'react-icons/io5';
+import { IoCalendarOutline, IoHomeOutline, IoNotificationsOutline } from 'react-icons/io5';
 import { LuTicketCheck } from 'react-icons/lu';
 import { PiScroll } from 'react-icons/pi';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -33,6 +33,7 @@ function Sidebar({ setUser }) {
     { label: 'Raise Ticket', tab: '/ticket', icon: <LuTicketCheck /> },
     { label: 'Holidays', tab: '/holiday', icon: <BsSuitcase /> },
     { label: 'Late Days', tab: '/late', icon: <PiScroll /> },
+    { label: 'Notifications', tab: '/notification', icon: <IoNotificationsOutline /> },
     { label: 'Profile', tab: '/profile', icon: <BsPerson /> },
   ];
   return (

@@ -4,18 +4,23 @@ import { FaRegUserCircle } from 'react-icons/fa';
 import MobileNav from './mobilenav';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
-import { fetchHomePageAPI } from '../helper.js/api';
+import {
+  fetchHomePageAPI,
+  fetchNotificationByMonthAPI,
+} from '../helper.js/api';
 import loading from '../lottie/loading.json';
 import Lottie from 'lottie-react';
 import { HiOutlineDocumentReport } from 'react-icons/hi';
 import { BsSuitcase, BsSuitcase2 } from 'react-icons/bs';
 import { LuTicketCheck } from 'react-icons/lu';
 import { PiScroll } from 'react-icons/pi';
+import { IoNotificationsOutline } from 'react-icons/io5';
 
 // ===== HOME SCREEN =====
 export const HomeScreen = () => {
   const [time, setTime] = useState(new Date());
   const [homeData, setHomeData] = useState(null);
+  const [notificationData, setNotificationData] = useState([]);
   const [loadingState, setLoadingState] = useState(false);
   const navigate = useNavigate();
 
@@ -31,7 +36,13 @@ export const HomeScreen = () => {
     async function home() {
       setLoadingState(true); // start loading
       try {
+        const now = new Date();
         const data = await fetchHomePageAPI();
+        const data2 = await fetchNotificationByMonthAPI({
+          month: now.getMonth() + 1, // number ✅
+          year: now.getFullYear(),
+        });
+        setNotificationData(Array.isArray(data2?.data) ? data2.data : []);
         setHomeData(data);
       } catch (error) {
         console.error(error);
@@ -56,7 +67,12 @@ export const HomeScreen = () => {
     });
 
   const formatTo12Hour = (timeStr) => {
-    if (!timeStr || timeStr === '-:--:--' || timeStr === '--:--:--'|| timeStr === '--:--')
+    if (
+      !timeStr ||
+      timeStr === '-:--:--' ||
+      timeStr === '--:--:--' ||
+      timeStr === '--:--'
+    )
       return '--:--:--';
 
     const date = new Date(`1970-01-01T${timeStr}`);
@@ -106,7 +122,26 @@ export const HomeScreen = () => {
       icon: <PiScroll />,
       navi: '/late',
     },
+    {
+      label: 'Notifications',
+      bg: 'bg-ltgray',
+      icon: <IoNotificationsOutline />,
+      navi: '/notification',
+    },
   ];
+
+  const getVisited = () => {
+    return JSON.parse(localStorage.getItem('visited_notifications')) || [];
+  };
+
+  const getUnreadCount = (data) => {
+    const visited = getVisited();
+    return data.filter((item) => !visited.includes(item.id)).length;
+  };
+
+  const unreadCount = notificationData.length
+    ? getUnreadCount(notificationData)
+    : 0;
 
   return (
     <>
@@ -265,6 +300,12 @@ export const HomeScreen = () => {
                 onClick={() => navigate(item.navi)}
               >
                 <div className={`explore-icon ${item.bg}`}>{item.icon}</div>
+                {/* 🔴 Badge only for notification */}
+                {item.navi === '/notification' && unreadCount > 0 && (
+                  <span className="mp-icon-badge">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
                 <span style={{ whiteSpace: 'pre-line' }}>{item.label}</span>
               </div>
             ))}

@@ -383,6 +383,19 @@ async function fetchLiveLocationAddrAPI(data) {
   }
 }
 
+async function fetchNotificationByMonthAPI(filter) {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/notifications?month=${filter.month}&year=${filter.year}`
+    );
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+}
+
 export {
   loginAPI,
   forgetPasswordAPI,
@@ -405,4 +418,5 @@ export {
   fetchHolidaysAPI,
   fetchLateDaysAPI,
   fetchLiveLocationAddrAPI,
+  fetchNotificationByMonthAPI,
 };

@@ -20,6 +20,7 @@ import ApplyLeave from './components/ApplyLeave';
 import DayAttendance from './components/DayAttendance';
 import ChangePassword from './components/ChangePassword';
 import { checkTokenExpiresAPI } from './helper.js/api';
+import Notification from './components/Notification';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -102,6 +103,7 @@ function App() {
           <Route path="/apply-leave" element={<ApplyLeave />} />
           <Route path="/attendance-details" element={<DayAttendance />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/notification" element={<Notification />} />
         </Route>
       </Routes>
     </BrowserRouter>
