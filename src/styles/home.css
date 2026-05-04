@@ -971,9 +971,9 @@ textarea {
 
 .log-date-row {
   display: flex;
-  justify-content: start;
+  justify-content: space-between;
   gap: 10px;
-  align-items: space-between;
+  align-items: center ;
   padding: 12px 16px;
 }
 
