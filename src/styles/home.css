@@ -1860,6 +1860,7 @@ textarea {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 999;
   /* position: fixed; */
   /* right: 10px;
   top: -40px; */
@@ -2283,3 +2284,36 @@ textarea {
   text-align: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+.mp-dragging {
+  transform: translateX(40px);
+  transition: 0.2s;
+  background: #e6f0ff;
+}
+
+/* Optional swipe hint */
+.perm-card {
+  /* touch-action: none; 🔥 stops mobile scroll */
+  user-select: none;
+}
+
+.permission-screen {
+  overscroll-behavior: none; /* 🔥 stops infinite scroll bounce */
+}
+
+.mp-drop-zone {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 95%;
+  text-align: center;
+  background: var(--gray-light);
+  height: 12%;
+  place-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--gray-mid);
+  z-index: 999;
+}
+

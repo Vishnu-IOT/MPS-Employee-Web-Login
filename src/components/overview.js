@@ -62,6 +62,56 @@ export const OverviewScreen = () => {
     return R * c;
   };
 
+  // ADD THIS after getDistanceInMeters function
+  const getAccuratePosition = () => {
+    return new Promise((resolve, reject) => {
+      const positions = [];
+      let watchId = null;
+      let settled = false;
+
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+        if (positions.length === 0) {
+          reject(new Error('No position received'));
+          return;
+        }
+        const best = positions.reduce((a, b) =>
+          a.coords.accuracy < b.coords.accuracy ? a : b
+        );
+        resolve(best);
+      };
+
+      const timeout = setTimeout(finish, 10000);
+
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          positions.push(pos);
+          if (pos.coords.accuracy <= 30) {
+            clearTimeout(timeout);
+            finish();
+          }
+        },
+        (err) => {
+          clearTimeout(timeout);
+          if (positions.length > 0) {
+            finish();
+          } else {
+            settled = true;
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+            reject(err);
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0,
+        }
+      );
+    });
+  };
+
   const handleAttendance = async (capturedBlob) => {
     setSubmitting(true);
     const formData = new FormData();
@@ -282,103 +332,116 @@ export const OverviewScreen = () => {
       year: 'numeric',
     });
 
-  const handleAction = (type) => {
+  const handleAction = async (type) => {
     const now = new Date();
     setActionTime(now);
     setActionType(type);
     setLoadingState(true);
 
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude } = pos.coords;
+    const OFFICE_LAT = distanceData?.data?.lat;
+    const OFFICE_LON = distanceData?.data?.lon;
+    const MAX_DISTANCE = distanceData?.data?.meter;
 
-        const OFFICE_LAT = distanceData?.data.lat;
-        const OFFICE_LON = distanceData?.data.lon;
-        const MAX_DISTANCE = distanceData?.data.meter;
-        // console.log(OFFICE_LAT, OFFICE_LON, MAX_DISTANCE);
+    if (
+      (type === 'checkin' || type === 'checkout') &&
+      (!OFFICE_LAT || !OFFICE_LON || !MAX_DISTANCE)
+    ) {
+      setLoadingState(false);
+      alert('Office location not available. Please try again.');
+      return;
+    }
 
-        if (!OFFICE_LAT || !OFFICE_LON || !MAX_DISTANCE) {
-          setLoadingState(false);
-          alert('Office location not available');
-          return;
-        }
+    try {
+      let pos;
+      try {
+        pos = await getAccuratePosition();
+      } catch (err) {
+        setLoadingState(false);
+        alert(
+          'Location permission required or GPS unavailable. Please enable location and try again.'
+        );
+        return;
+      }
 
-        // if (accuracy > 50) {
-        //   alert('Low GPS accuracy, try again');
-        //   return;
-        // }
+      const { latitude, longitude, accuracy } = pos.coords;
 
-        if (type === 'checkin' || type === 'checkout') {
-          const distance = getDistanceInMeters(
-            OFFICE_LAT,
-            OFFICE_LON,
-            latitude,
-            longitude
+      console.log(
+        `📍 GPS: lat=${latitude}, lon=${longitude}, accuracy=±${Math.round(accuracy)}m`
+      );
+      console.log(
+        `🏢 Office: lat=${OFFICE_LAT}, lon=${OFFICE_LON}, maxDist=${MAX_DISTANCE}m`
+      );
+
+      if (type === 'checkin' || type === 'checkout') {
+        const distance = getDistanceInMeters(
+          OFFICE_LAT,
+          OFFICE_LON,
+          latitude,
+          longitude
+        );
+        console.log(`📏 Distance: ${Math.round(distance)}m`);
+
+        if (accuracy > 100) {
+          const proceed = window.confirm(
+            `GPS accuracy is low (±${Math.round(accuracy)}m). Your location may not be precise. Proceed anyway?`
           );
-
-          if (distance > MAX_DISTANCE) {
+          if (!proceed) {
             setLoadingState(false);
-            alert(
-              `You are too far from office (${Math.round(distance)} meters)`
-            );
             return;
           }
         }
 
-        let updatedData = { ...checkData };
-
-        if (type === 'checkin') {
-          updatedData = {
-            ...updatedData,
-            type: 'checkin',
-            checkin_lat: latitude,
-            checkin_lon: longitude,
-          };
+        if (distance > MAX_DISTANCE) {
+          setLoadingState(false);
+          alert(
+            `You are ${Math.round(distance)}m from office.\nAllowed range: ${MAX_DISTANCE}m.\n\nIf you are at the office, your GPS may be inaccurate — try moving near a window for better signal.`
+          );
+          return;
         }
-
-        if (type === 'checkout') {
-          updatedData = {
-            ...updatedData,
-            type: 'checkout',
-            checkout_lat: latitude,
-            checkout_lon: longitude,
-          };
-        }
-        if (type === 'break') {
-          updatedData = {
-            ...updatedData,
-            type: onBreak ? 'breakout' : 'breakin', // 👈 toggle
-          };
-        }
-
-        setCheckData(updatedData);
-
-        setLoadingState(false);
-
-        setOpenDialog(true);
-
-        setLiveLocation('Fetching location...');
-
-        try {
-          const data = await fetchLiveLocationAddrAPI({
-            checkin_lat: latitude,
-            checkin_lon: longitude,
-          });
-
-          setLiveLocation(data?.display_name || 'Location not found');
-        } catch (e) {
-          setLiveLocation('Location unavailable');
-        }
-      },
-      (err) => {
-        alert('Location permission required');
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000, // ⬅️ important
-        maximumAge: 0,
       }
-    );
+
+      let updatedData = { ...checkData };
+
+      if (type === 'checkin') {
+        updatedData = {
+          ...updatedData,
+          type: 'checkin',
+          checkin_lat: latitude,
+          checkin_lon: longitude,
+        };
+      } else if (type === 'checkout') {
+        updatedData = {
+          ...updatedData,
+          type: 'checkout',
+          checkout_lat: latitude,
+          checkout_lon: longitude,
+        };
+      } else if (type === 'break') {
+        updatedData = {
+          ...updatedData,
+          type: onBreak ? 'breakout' : 'breakin',
+        };
+      }
+
+      setCheckData(updatedData);
+      setLoadingState(false);
+      setOpenDialog(true);
+
+      setLiveLocation('Fetching location...');
+      try {
+        const data = await fetchLiveLocationAddrAPI({
+          checkin_lat: latitude,
+          checkin_lon: longitude,
+        });
+        setLiveLocation(data?.display_name || 'Location not found');
+      } catch (e) {
+        setLiveLocation('Location unavailable');
+      }
+    } catch (err) {
+      setLoadingState(false);
+      console.error('handleAction error:', err);
+      alert('Something went wrong. Please try again.');
+    }
   };
 
   return (

@@ -396,6 +396,26 @@ async function fetchNotificationByMonthAPI(filter) {
   }
 }
 
+async function convertPermissionToLeaveAPI(id) {
+  try {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.get(
+      `${BASE_URL}/convert-Permission-ToLeave?id=${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+}
+
 export {
   loginAPI,
   forgetPasswordAPI,
@@ -419,4 +439,5 @@ export {
   fetchLateDaysAPI,
   fetchLiveLocationAddrAPI,
   fetchNotificationByMonthAPI,
+  convertPermissionToLeaveAPI,
 };
