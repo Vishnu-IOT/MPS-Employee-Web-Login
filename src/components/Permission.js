@@ -317,9 +317,9 @@ function Permission() {
                         <span>
                           <div
                             className={`badge ${
-                              log.status === 'Pending'
+                              log.status === 'pending'
                                 ? 'late'
-                                : log.status === 'Approved'
+                                : log.status === 'approved'
                                   ? 'PRESENT'
                                   : 'ABSENT'
                             }`}
@@ -336,7 +336,7 @@ function Permission() {
                   <Lottie
                     animationData={animationData}
                     loop={true}
-                    style={{ width: 120, height: 120 }}
+                    style={{ width: 120, height: 120, transform: 'none' }}
                   />
                   <div>
                     <p>No Permission Found</p>
@@ -347,21 +347,23 @@ function Permission() {
           </div>
         </div>
 
-        <DropZone visible={!!activeId} />
+        {activeId ? (
+          <DropZone visible={!!activeId} />
+        ) : (
+          <div className="apply-mob-main mobile-only">
+            <div
+              className="apply-btn"
+              onClick={() => navigate('/apply-permission')}
+            >
+              <span style={{ fontSize: '18px' }}>
+                <MdAdd />
+              </span>
+              <span>Apply Permission</span>
+            </div>
+          </div>
+        )}
 
         <DragOverlay dropAnimation={null}>{activeId ? null : null}</DragOverlay>
-
-        <div className="apply-mob-main mobile-only">
-          <div
-            className="apply-btn"
-            onClick={() => navigate('/apply-permission')}
-          >
-            <span style={{ fontSize: '18px' }}>
-              <MdAdd />
-            </span>
-            <span>Apply Permission</span>
-          </div>
-        </div>
       </DndContext>
 
       {showConfirm && (
