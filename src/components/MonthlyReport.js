@@ -253,7 +253,7 @@ function MonthlyReport() {
             </div>
             <div className="mr-stat-cell">
               <div className="mr-stat-label">Leave</div>
-              <div className="mr-stat-value"> {daysData?.absent_days}</div>
+              <div className="mr-stat-value"> {daysData?.leave_days}</div>
             </div>
           </div>
         </div>
