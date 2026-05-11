@@ -93,6 +93,12 @@ export const HomeScreen = () => {
       navi: '/report',
     },
     {
+      label: 'Pay Roll',
+      bg: 'bg-tick-blue',
+      icon: <PiScroll />,
+      navi: '/salary-payslip',
+    },
+    {
       label: 'Permission',
       bg: 'bg-teal',
       icon: <FaRegUserCircle />,
@@ -197,12 +203,16 @@ export const HomeScreen = () => {
                 <div
                   className={`badge-status ${
                     homeData?.attendance?.type === 'PRESENT'
-                      ? 'badge-present'
+                      ? homeData?.attendance?.late_checkin
+                        ? 'badge-late'
+                        : 'badge-present'
                       : 'badge-absent'
                   }`}
                 >
                   {homeData?.attendance?.type === 'PRESENT'
-                    ? 'PRESENT'
+                    ? homeData?.attendance?.late_checkin
+                      ? `LATE ${homeData?.attendance?.late_checkin_time}`
+                      : 'PRESENT'
                     : 'ABSENT'}
                 </div>
               </div>

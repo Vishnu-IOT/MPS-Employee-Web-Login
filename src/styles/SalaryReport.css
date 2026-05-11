@@ -1,0 +1,475 @@
+/* ============================================================
+   SalaryReport.css
+   Mobile  : single-column, 390 px phone shell
+   Desktop : two-column grid for breakdown + salary panels
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=DM+Mono:wght@400;500&display=swap');
+
+/* ---------- Outer Wrapper ---------- */
+/* .sr-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #eef0f5;
+  padding: 32px 16px;
+  font-family: 'DM Sans', sans-serif;
+} */
+
+/* .sr-wrapper{
+    position: relative;
+    z-index: 1;
+    animation: fadeDown 0.4s ease both;
+} */
+
+/* ---------- Card Shell ---------- */
+/* .sr-phone {
+  width: 100%;
+  background: #f4f5f8;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.13);
+  display: flex;
+  flex-direction: column;
+} */
+
+/* ---------- Top Bar (mobile header) ---------- */
+.sr-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 18px 10px;
+  background: #f4f5f8;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.sr-back {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid #d2d5de;
+  background: #fff;
+  font-size: 20px;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding-bottom: 2px;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.sr-back:hover {
+  background: #e6e8ef;
+}
+
+.sr-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #2d5be3;
+  letter-spacing: 0.1px;
+}
+
+/* ---------- Hero Card ---------- */
+.sr-hero {
+  /* margin: 0 14px 14px; */
+  background: linear-gradient(334deg, #314db4 0%, #142b5c 100%);
+  border-radius: 20px 20px 0 0;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: 0 6px 24px rgba(45, 79, 204, 0.32);
+  /* animation: fadeDown 0.4s ease both; */
+}
+
+.sr-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+.sr-company {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 18px;
+  letter-spacing: -0.4px;
+}
+
+.sr-emp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sr-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.38);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sr-emp-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.sr-emp-id {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.sr-month-badge {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  padding: 8px 14px;
+  text-align: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(6px);
+}
+
+.sr-month-text {
+  display: block;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 3px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.sr-month-num {
+  display: block;
+  font-size: 13px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.sr-bg-card {
+  background: var(--gray-light);
+  padding: 0 12px 12px;
+  border-radius: 0 0 16px 16px;
+}
+
+/* ---------- Attendance Summary Cards ---------- */
+.sr-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding-top: 20px;
+  /* margin: 0 14px 14px; */
+  /* animation: fadeUp 0.4s 0.08s ease both; */
+}
+
+.sr-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 8px;
+  padding: 14px 10px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sr-card--neutral {
+  background: #fff;
+}
+.sr-card--green {
+  background: #edf8f2;
+}
+.sr-card--red {
+  background: #fdf1f1;
+}
+
+.sr-card-label {
+  font-size: 10.5px;
+  color: #8a8f9c;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.sr-card-label--green {
+  color: #2aab5e;
+}
+.sr-card-label--red {
+  color: #e04444;
+}
+
+.sr-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e2233;
+  font-family: 'DM Mono', monospace;
+  line-height: 1;
+}
+.sr-card-value--green {
+  color: #2aab5e;
+}
+.sr-card-value--red {
+  color: #e04444;
+}
+
+/* ---------- Two-column Grid ---------- */
+.sr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px 0;
+  /* margin: 0 14px; */
+  /* animation: fadeUp 0.4s 0.16s ease both; */
+}
+
+/* ---------- Section ---------- */
+/* .sr-section {
+  margin-bottom: 14px;
+} */
+
+.sr-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9298a8;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+
+/* ---------- Table ---------- */
+.sr-table {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sr-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 16px;
+  border-bottom: 1px solid #f0f1f5;
+  transition: background 0.12s;
+}
+.sr-row:last-of-type {
+  border-bottom: none;
+}
+.sr-row:hover {
+  background: #fafbfe;
+}
+
+.sr-row-label {
+  font-size: 13.5px;
+  color: #4a5068;
+  font-weight: 400;
+}
+
+.sr-row-value {
+  font-size: 14px;
+  color: #1e2233;
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+}
+.sr-row-value--red {
+  color: #e04444;
+}
+.sr-row-value--orange {
+  color: #e07e00;
+}
+
+/* Table foot notes */
+.sr-table-note {
+  padding: 10px 16px;
+  font-size: 11px;
+  color: #2d5be3;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-top: 1px solid #f0f1f5;
+}
+
+.sr-table-note--right {
+  color: #8a8f9c;
+  justify-content: flex-end;
+}
+
+.sr-note-icon {
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid #2d5be3;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  width: 15px;
+  height: 15px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* ---------- Net Salary Footer ---------- */
+.sr-net {
+  /* margin: 0 14px 18px; */
+  background: linear-gradient(130deg, #eef3fd 0%, #dde8fa 100%);
+  border-radius: 8px;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border: 1.5px solid #ccd9f4;
+  box-shadow: 0 4px 16px rgba(45, 79, 204, 0.1);
+  /* animation: fadeUp 0.4s 0.24s ease both; */
+  flex-wrap: wrap;
+}
+
+.sr-net-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2d4fcc;
+  margin-bottom: 3px;
+}
+
+.sr-net-month {
+  font-size: 11.5px;
+  color: #7a9ad4;
+  font-weight: 400;
+}
+
+.sr-net-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.sr-net-amount {
+  font-size: 30px;
+  font-weight: 700;
+  color: #2d4fcc;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.sr-net-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1e9e5e;
+  background: #e6f8ef;
+  border: 1px solid #b5e8d0;
+  border-radius: 20px;
+  padding: 3px 10px;
+  letter-spacing: 0.2px;
+}
+
+.sr-net-check {
+  font-size: 10px;
+  color: #1e9e5e;
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   MOBILE  ≤ 900 px  — single-column layout
+   ============================================================ */
+@media (max-width: 900px) {
+  .sr-wrapper {
+    padding: 0;
+    background: #f4f5f8;
+    align-items: flex-start;
+  }
+
+  .sr-phone {
+    max-width: 100%;
+    border-radius: 0;
+    max-height: 100dvh;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding: 16px;
+  }
+  .sr-phone::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Show mobile top-bar */
+  .sr-topbar {
+    display: flex;
+  }
+
+  /* Reset spacing to mobile values */
+  .sr-hero {
+    /* margin: 0 14px 14px; */
+    border-radius: 16px 16px 0 0;
+  }
+  /* .sr-cards {
+    margin: 0 14px 14px;
+  } */
+  .sr-grid {
+    grid-template-columns: 1fr; /* single column */
+    gap: 0;
+    /* margin: 0 14px; */
+  }
+  .sr-section {
+    margin-bottom: 14px;
+  }
+  /* .sr-net {
+    margin: 0 14px 18px;
+  } */
+  .sr-label {
+    font-size: 10px;
+  }
+  .sr-card-label {
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .sr-card-value {
+    font-size: 24px;
+  }
+  /* Reset text sizes */
+  .sr-company {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  .sr-net-amount {
+    font-size: 24px;
+  }
+}

@@ -21,6 +21,9 @@ import DayAttendance from './components/DayAttendance';
 import ChangePassword from './components/ChangePassword';
 import { checkTokenExpiresAPI } from './helper.js/api';
 import Notification from './components/Notification';
+// import MainPage from './components/MainPage';
+// import MonthOverview from './components/MonthOverview';
+import SalaryReport from './components/SalaryReport';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -104,6 +107,9 @@ function App() {
           <Route path="/attendance-details" element={<DayAttendance />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/notification" element={<Notification />} />
+          {/* <Route path="/create-task" element={<MainPage />} />
+          <Route path="/month-overview" element={<MonthOverview />} /> */}
+          <Route path="/salary-payslip" element={<SalaryReport />} />
         </Route>
       </Routes>
     </BrowserRouter>

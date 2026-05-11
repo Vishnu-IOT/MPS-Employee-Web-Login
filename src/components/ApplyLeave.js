@@ -104,7 +104,10 @@ function ApplyLeave() {
           >
             <option value="">Select</option>
             {leave.duration === '1' && (
-              <option value="CASUAL">Casual Leave</option>
+              <>
+                <option value="CASUAL">Casual Leave</option>
+                <option value="SICK">Sick Leave</option>
+              </>
             )}
             <option value="LOP">Loss of Pay</option>
           </select>

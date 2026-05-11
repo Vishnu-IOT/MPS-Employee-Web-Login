@@ -3,7 +3,11 @@ import React, { useState } from 'react';
 import { BsPerson, BsSuitcase, BsSuitcase2 } from 'react-icons/bs';
 import { FiLogOut } from 'react-icons/fi';
 import { HiOutlineDocumentReport } from 'react-icons/hi';
-import { IoCalendarOutline, IoHomeOutline, IoNotificationsOutline } from 'react-icons/io5';
+import {
+  IoCalendarOutline,
+  IoHomeOutline,
+  IoNotificationsOutline,
+} from 'react-icons/io5';
 import { LuTicketCheck } from 'react-icons/lu';
 import { PiScroll } from 'react-icons/pi';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -28,13 +32,20 @@ function Sidebar({ setUser }) {
       tab: '/report',
       icon: <HiOutlineDocumentReport />,
     },
+    { label: 'Pay Roll', tab: '/salary-payslip', icon: <PiScroll /> },
     { label: 'Permission', tab: '/permission', icon: <BsPerson /> },
     { label: 'Leave', tab: '/leave', icon: <BsSuitcase2 /> },
     { label: 'Raise Ticket', tab: '/ticket', icon: <LuTicketCheck /> },
     { label: 'Holidays', tab: '/holiday', icon: <BsSuitcase /> },
     { label: 'Late Days', tab: '/late', icon: <PiScroll /> },
-    { label: 'Notifications', tab: '/notification', icon: <IoNotificationsOutline /> },
+    {
+      label: 'Notifications',
+      tab: '/notification',
+      icon: <IoNotificationsOutline />,
+    },
     { label: 'Profile', tab: '/profile', icon: <BsPerson /> },
+    // { label: 'Create Task', tab: '/create-task', icon: <BsPerson /> },
+    // { label: 'Month Overview', tab: '/month-overview', icon: <BsPerson /> },
   ];
   return (
     <div className="desktop-sidebar">
@@ -44,16 +55,18 @@ function Sidebar({ setUser }) {
         </div>
         <span>MPeoples</span>
       </div>
-      {items.map((item) => (
-        <div
-          key={item.tab}
-          className={`sidebar-nav-item ${location.pathname === item.tab ? 'active' : ''}`}
-          onClick={() => navigate(item.tab)}
-        >
-          {item.icon}
-          {item.label}
-        </div>
-      ))}
+      <div>
+        {items.map((item) => (
+          <div
+            key={item.tab}
+            className={`sidebar-nav-item ${location.pathname === item.tab ? 'active' : ''}`}
+            onClick={() => navigate(item.tab)}
+          >
+            {item.icon}
+            {item.label}
+          </div>
+        ))}
+      </div>
       <div className="sidebar-logout" onClick={() => setOpenLogout(true)}>
         <span>
           <FiLogOut />

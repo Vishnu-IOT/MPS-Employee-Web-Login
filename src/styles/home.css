@@ -888,6 +888,9 @@ textarea {
 .bg-red {
   background: #f43f5e;
 }
+.bg-tick-blue {
+  background: #3f9df4;
+}
 .bg-ltgray {
   background: #11101a;
 }
@@ -2029,7 +2032,8 @@ textarea {
 .mp-icon-badge {
   position: absolute;
   /* top: -4px; */
-  right: 26%;
+  /* right: 26%; */
+  left: 91%;
   background: #ff3b30;
   color: white !important;
   font-size: 10px;

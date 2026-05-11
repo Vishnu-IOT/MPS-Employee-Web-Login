@@ -7,11 +7,14 @@ import { MdKeyboardArrowLeft } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { fetchAttendanceByMonthAPI } from '../helper.js/api';
 import PdfReport from './PdfReport';
+import { IoCalendarOutline } from 'react-icons/io5';
 
 function MonthlyReport() {
   const navigate = useNavigate();
   const [attendanceData, setAttendanceData] = useState([]);
+  const [daysData, setDaysData] = useState();
   const [loadingState, setLoadingState] = useState(false);
+  const [active, setActive] = useState('Total');
 
   const now = new Date();
   const currentMonth = String(now.getMonth() + 1);
@@ -47,8 +50,6 @@ function MonthlyReport() {
     }));
   };
 
-  const reversedData = [...attendanceData].reverse();
-
   useEffect(() => {
     async function monthlyReport() {
       setLoadingState(true); // start loading
@@ -58,6 +59,7 @@ function MonthlyReport() {
         setAttendanceData(
           Array.isArray(data?.data.attendance) ? data.data.attendance : []
         );
+        setDaysData(data.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -109,76 +111,164 @@ function MonthlyReport() {
     });
   };
 
+  // const reversedData = [...attendanceData].reverse();
+
+  const reversedData = [
+    ...(active === 'Total'
+      ? attendanceData
+      : active.toLowerCase() === 'leave'
+        ? attendanceData.filter((item) =>
+            ['casual', 'lop', 'sick'].includes(item.type?.toLowerCase())
+          )
+        : active.toLowerCase() === 'holiday'
+          ? attendanceData.filter((item) =>
+              ['w-h', 'c-h', 'l-h'].includes(item.type?.toLowerCase())
+            )
+          : active.toLowerCase() === 'present'
+            ? attendanceData.filter((item) =>
+                ['present', 'onduty'].includes(item.type?.toLowerCase())
+              )
+            : attendanceData.filter(
+                (item) => item.type?.toLowerCase() === active.toLowerCase()
+              )),
+  ].reverse();
+
   return (
     <div className="report-screen">
-      <div className="report-top">
-        <div className="report-back">
-          <button className="down-btn" onClick={() => navigate('/home')}>
-            <MdKeyboardArrowLeft />
-          </button>
-          <h3 style={{ fontWeight: 600, fontSize: '16px' }}>Monthly Report</h3>
-        </div>
-        <div className="page-headers glass-panels">
-          <div className="header-content">
-            <div className="permission-title-groups">
-              <Lottie
-                animationData={animationData}
-                style={{ width: 100, height: 100 }}
-              />
-              <div>
-                <h2>Monthly Report</h2>
-                <p>
-                  Track and analyze monthly reports, ensuring clear insights
-                  into employee performance and attendance across your
-                  organization.
-                </p>
+      <div className="mr-report-fixed">
+        <div className="report-top">
+          <div className="report-back">
+            <button className="down-btn" onClick={() => navigate('/home')}>
+              <MdKeyboardArrowLeft />
+            </button>
+            <h3 style={{ fontWeight: 600, fontSize: '16px' }}>
+              Monthly Report
+            </h3>
+          </div>
+          <div className="page-headers glass-panels">
+            <div className="header-content">
+              <div className="permission-title-groups">
+                <Lottie
+                  animationData={animationData}
+                  style={{ width: 100, height: 100 }}
+                />
+                <div>
+                  <h2>Monthly Report</h2>
+                  <p>
+                    Track and analyze monthly reports, ensuring clear insights
+                    into employee performance and attendance across your
+                    organization.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            gap: '10px',
+            padding: '8px 16px',
+          }}
+        >
+          <div className="form-groups">
+            <select name="month" value={dateFilter.month} onChange={handleDate}>
+              {monthOptions.map((m) => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-groups">
+            <select name="year" value={dateFilter.year} onChange={handleDate}>
+              {[2026, 2025, 2024, 2023].map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            gap: '10px',
+            padding: '0 16px',
+          }}
+        >
+          <div className="form-groups">
+            <button
+              className="excel-btn"
+              onClick={() => {
+                if (attendanceData.length > 0) {
+                  PdfReport(attendanceData);
+                } else {
+                  alert('No data to download');
+                }
+              }}
+            >
+              <IoMdDownload />
+            </button>
+          </div>
+          <div className="form-groups">
+            <button
+              className="excel-btn"
+              onClick={() => {
+                // navigate('/month-overview');
+                alert('Calendar feature is coming soon 🚀');
+              }}
+            >
+              <IoCalendarOutline />
+            </button>
+          </div>
+        </div>
+        {/* <h3 style={{ padding: '0 16px', fontWeight: 800 }}>Attendance Overview</h3> */}
+
+        {/* Attendance Status */}
+        <div className="mr-checkin-main">
+          <div className="mr-stats-grid">
+            <div className="mr-stat-cell">
+              <div className="mr-stat-label">Total Days</div>
+              <div className="mr-stat-value">{daysData?.total_days}</div>
+            </div>
+            <div className="mr-stat-cell">
+              <div className="mr-stat-label">Holidays</div>
+              <div className="mr-stat-value"> {daysData?.total_holidays}</div>
+            </div>
+            <div className="mr-stat-cell">
+              <div className="mr-stat-label">Working Days</div>
+              <div className="mr-stat-value"> {daysData?.working_days}</div>
+            </div>
+            <div className="mr-stat-cell">
+              <div className="mr-stat-label">Present</div>
+              <div className="mr-stat-value"> {daysData?.present_days}</div>
+            </div>
+            <div className="mr-stat-cell">
+              <div className="mr-stat-label">Absent</div>
+              <div className="mr-stat-value"> {daysData?.absent_days}</div>
+            </div>
+            <div className="mr-stat-cell">
+              <div className="mr-stat-label">Leave</div>
+              <div className="mr-stat-value"> {daysData?.absent_days}</div>
+            </div>
+          </div>
+        </div>
+        <div className="mr-page-tabs">
+          {['Total', 'Present', 'Absent', 'Leave', 'Holiday'].map((tab) => (
+            <button
+              key={tab}
+              className={`page-tab ${active === tab ? 'active' : ''}`}
+              onClick={() => setActive(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          width: '100%',
-          gap: '10px',
-          padding: '8px 16px',
-        }}
-      >
-        <div className="form-groups">
-          <select name="month" value={dateFilter.month} onChange={handleDate}>
-            {monthOptions.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="form-groups">
-          <select name="year" value={dateFilter.year} onChange={handleDate}>
-            {[2026, 2025, 2024, 2023].map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="form-groups">
-          <button
-            className="excel-btn"
-            onClick={() => {
-              if (attendanceData.length > 0) {
-                PdfReport(attendanceData);
-              } else {
-                alert('No data to download');
-              }
-            }}
-          >
-            <IoMdDownload />
-          </button>
-        </div>
-      </div>
-      {/* <h3 style={{ padding: '0 16px', fontWeight: 800 }}>Attendance Overview</h3> */}
 
       <div className="desktop-attendance-table">
         <div className="desktop-table-header">
@@ -220,6 +310,7 @@ function MonthlyReport() {
 
       {/* Log Items */}
       <div
+        className="mr-log-card"
         style={{
           display: 'flex',
           gap: '10px',

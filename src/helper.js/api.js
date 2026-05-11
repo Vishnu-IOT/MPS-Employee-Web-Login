@@ -416,6 +416,144 @@ async function convertPermissionToLeaveAPI(id) {
   }
 }
 
+async function fetchDailySalarySlipAPI() {
+  try {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    const response = await axios.post(
+      `${BASE_URL}/generate-Salary-daily`,
+      {
+        user_id: user.id,
+        date: currentDate,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+}
+
+async function fetchProjectListAPI() {
+  try {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    const response = await axios.get(
+      `${BASE_URL}/project/list?team_id=${user.team_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+}
+
+async function fetchTeamMembersListAPI() {
+  try {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    const response = await axios.get(
+      `${BASE_URL}/team-by-id?team_id=${user.team_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+}
+
+async function storeCreateTaskAPI(data) {
+  try {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.post(`${BASE_URL}/task/create`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+}
+
+async function fetchTaskListAPI() {
+  try {
+    const token = localStorage.getItem('token');
+    // const user = JSON.parse(localStorage.getItem('user'));
+
+    const response = await axios.get(`${BASE_URL}/task/list`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+}
+
+async function UpdateStartandEndTaskAPI(data) {
+  try {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.post(`${BASE_URL}/task-update`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+}
+
+async function fetchSummaryDataAPI() {
+  try {
+    const token = localStorage.getItem('token');
+    // const user = JSON.parse(localStorage.getItem('user'));
+
+    const response = await axios.get(`${BASE_URL}/get-Task-StatusCounts`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+}
+
 export {
   loginAPI,
   forgetPasswordAPI,
@@ -440,4 +578,11 @@ export {
   fetchLiveLocationAddrAPI,
   fetchNotificationByMonthAPI,
   convertPermissionToLeaveAPI,
+  fetchDailySalarySlipAPI,
+  fetchProjectListAPI,
+  fetchTeamMembersListAPI,
+  storeCreateTaskAPI,
+  fetchTaskListAPI,
+  UpdateStartandEndTaskAPI,
+  fetchSummaryDataAPI,
 };
