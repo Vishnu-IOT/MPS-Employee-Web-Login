@@ -36,6 +36,8 @@ function Holiday() {
     { label: 'December', value: '12' },
   ];
 
+  const yearOptions = Array.from({ length: 4 }, (_, i) => currentYear - 3 + i);
+
   const handleDate = (e) => {
     const { name, value } = e.target;
 
@@ -68,7 +70,7 @@ function Holiday() {
             <button className="down-btn" onClick={() => navigate('/home')}>
               <MdKeyboardArrowLeft />
             </button>
-            <h3 style={{ fontWeight: 600, fontSize:'16px' }}>MPeoples</h3>
+            <h3 style={{ fontWeight: 600, fontSize: '16px' }}>MPeoples</h3>
           </div>
           <div className="permission-main">
             <div className="page-headers glass-panels">
@@ -120,7 +122,7 @@ function Holiday() {
                   value={dateFilter.year}
                   onChange={handleDate}
                 >
-                  {[2026, 2025, 2024, 2023].map((y) => (
+                  {yearOptions.map((y) => (
                     <option key={y} value={y}>
                       {y}
                     </option>

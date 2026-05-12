@@ -41,6 +41,8 @@ function MonthlyReport() {
     { label: 'December', value: '12' },
   ];
 
+  const yearOptions = Array.from({ length: 4 }, (_, i) => currentYear - 3 + i);
+
   const handleDate = (e) => {
     const { name, value } = e.target;
 
@@ -164,15 +166,9 @@ function MonthlyReport() {
             </div>
           </div>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            gap: '10px',
-            padding: '8px 16px',
-          }}
-        >
-          <div className="form-groups">
+
+        <div className="mr-form-group">
+          <div className="form-groups mr-form">
             <select name="month" value={dateFilter.month} onChange={handleDate}>
               {monthOptions.map((m) => (
                 <option key={m.value} value={m.value}>
@@ -181,26 +177,18 @@ function MonthlyReport() {
               ))}
             </select>
           </div>
-          <div className="form-groups">
+
+          <div className="form-groups mr-form">
             <select name="year" value={dateFilter.year} onChange={handleDate}>
-              {[2026, 2025, 2024, 2023].map((y) => (
+              {yearOptions.map((y) => (
                 <option key={y} value={y}>
                   {y}
                 </option>
               ))}
             </select>
           </div>
-        </div>
 
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            gap: '10px',
-            padding: '0 16px',
-          }}
-        >
-          <div className="form-groups">
+          <div className="form-groups mr-form">
             <button
               className="excel-btn"
               onClick={() => {
@@ -214,7 +202,8 @@ function MonthlyReport() {
               <IoMdDownload />
             </button>
           </div>
-          <div className="form-groups">
+
+          <div className="form-groups mr-form">
             <button
               className="excel-btn"
               onClick={() => {
@@ -226,6 +215,7 @@ function MonthlyReport() {
             </button>
           </div>
         </div>
+
         {/* <h3 style={{ padding: '0 16px', fontWeight: 800 }}>Attendance Overview</h3> */}
 
         {/* Attendance Status */}

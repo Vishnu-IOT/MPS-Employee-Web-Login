@@ -442,6 +442,27 @@ async function fetchDailySalarySlipAPI() {
   }
 }
 
+async function fetchMonthlySalarySlipAPI(date) {
+  try {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    const response = await axios.get(
+      `${BASE_URL}/salary-Slip-User?month=${date.month}&year=${date.year}&user_id=${user.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+}
+
 async function fetchProjectListAPI() {
   try {
     const token = localStorage.getItem('token');
@@ -579,6 +600,7 @@ export {
   fetchNotificationByMonthAPI,
   convertPermissionToLeaveAPI,
   fetchDailySalarySlipAPI,
+  fetchMonthlySalarySlipAPI,
   fetchProjectListAPI,
   fetchTeamMembersListAPI,
   storeCreateTaskAPI,

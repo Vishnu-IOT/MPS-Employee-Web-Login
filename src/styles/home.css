@@ -1198,10 +1198,11 @@ textarea {
   transition: all 0.25s ease;
 }
 .excel-btn {
-  border: 1px solid var(--gray-light);
+  border: 1px solid #cbd5e1;
   padding: 12px 14px;
   border-radius: 10px;
   width: 100%;
+  background-color: #f1f5f9;
 }
 /* ===== PERMISSION HISTORY ===== */
 .permission-screen {
@@ -2079,6 +2080,12 @@ textarea {
 }
 
 /* monthly report data */
+.mr-form-group {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  padding: 8px 16px;
+}
 .mr-page-tabs {
   padding: 8px 16px;
   display: flex;
@@ -2096,7 +2103,7 @@ textarea {
 .mr-stats-grid {
   height: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   /* grid-template-columns: 1fr 1fr; */
   gap: 10px;
   /* background: var(--white); */
@@ -2105,7 +2112,9 @@ textarea {
 }
 
 .mr-stat-cell {
-  /* background: #eaf1ffa6; */
+  background: #f5f4fb;
+  width: 100%;
+  /* max-width: 16%; */
   padding: 14px;
   text-align: center;
   display: flex;
@@ -2140,7 +2149,7 @@ textarea {
 }
 
 .mr-stat-value {
-  font-size: 1.1rem;
+  font-size: 1.9rem;
   font-weight: 800;
   color: var(--text-dark);
 }
@@ -2429,6 +2438,17 @@ textarea {
 
   .mr-log-card {
     margin-top: 345px;
+  }
+
+  .mr-form-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+    gap: 10px;
+    padding: 8px 16px;
+  }
+  .mr-form {
+    width: 100%;
   }
 }
 
