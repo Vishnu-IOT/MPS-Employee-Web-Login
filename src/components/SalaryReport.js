@@ -357,7 +357,7 @@ function SalaryReport() {
             {/* Header */}
             <div className="ps-dialog__header">
               <div>
-                <h2 className="ps-dialog__title">Generate Salary Report</h2>
+                <h2 className="ps-dialog__title">Generate Salary Slip</h2>
 
                 <p className="ps-dialog__subtitle">
                   Select the reporting period for the employee payroll summary.

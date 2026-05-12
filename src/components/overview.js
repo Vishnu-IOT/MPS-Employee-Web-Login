@@ -444,6 +444,20 @@ export const OverviewScreen = () => {
     }
   };
 
+  const attendanceLabels = {
+    PRESENT: 'PRESENT',
+    ABSENT: 'ABSENT',
+    HALFDAY: 'Half Day',
+    LEAVE: 'Leave',
+    SICK: 'Sick',
+    CASUAL: 'Casual',
+    LOP: 'LOP',
+    ONDUTY: 'On Duty',
+    'L-H': 'Local Holiday',
+    'C-H': 'Casual Holiday',
+    'W-H': 'Weekend Holiday',
+  };
+
   return (
     <>
       <MobileNav />
@@ -688,7 +702,7 @@ export const OverviewScreen = () => {
                 >
                   {log.late_checkin
                     ? `Late ${log.late_checkin_time}`
-                    : log.type}
+                    : attendanceLabels[log.type]}
                 </div>
               </div>
               <div className="log-times">
@@ -742,7 +756,7 @@ export const OverviewScreen = () => {
                 >
                   {log.late_checkin
                     ? `Late ${log.late_checkin_time}`
-                    : log.type}
+                    : attendanceLabels[log.type]}
                 </div>
               </span>
             </div>

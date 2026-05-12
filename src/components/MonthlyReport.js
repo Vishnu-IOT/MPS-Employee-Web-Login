@@ -135,6 +135,74 @@ function MonthlyReport() {
               )),
   ].reverse();
 
+  const attendanceLabels = {
+    PRESENT: {
+      label: 'PRESENT',
+      bg: '#dcfce7',
+      text: '#15803d',
+    },
+
+    ABSENT: {
+      label: 'ABSENT',
+      bg: '#fee2e2',
+      text: '#dc2626',
+    },
+
+    HALFDAY: {
+      label: 'Half Day',
+      bg: '#fef3c7',
+      text: '#d97706',
+    },
+
+    LEAVE: {
+      label: 'Leave',
+      bg: '#ede9fe',
+      text: '#7c3aed',
+    },
+
+    SICK: {
+      label: 'Sick Leave',
+      bg: '#dbeafe',
+      text: '#2563eb',
+    },
+
+    CASUAL: {
+      label: 'Casual Leave',
+      bg: '#fce7f3',
+      text: '#db2777',
+    },
+
+    LOP: {
+      label: 'Loss of Pay',
+      bg: '#fecaca',
+      text: '#b91c1c',
+    },
+
+    ONDUTY: {
+      label: 'On Duty',
+      bg: '#cffafe',
+      text: '#0891b2',
+    },
+
+    'L-H': {
+      label: 'Local Holiday',
+      bg: '#e0f2fe',
+      text: '#0369a1',
+    },
+
+    'C-H': {
+      label: 'Casual Holiday',
+      bg: '#fae8ff',
+      text: '#a21caf',
+    },
+
+    'W-H': {
+      label: 'Weekend Holiday',
+      bg: '#e5e7eb',
+      text: '#4b5563',
+    },
+  };
+
   return (
     <div className="report-screen">
       <div className="mr-report-fixed">
@@ -290,8 +358,11 @@ function MonthlyReport() {
                       ? 'presents'
                       : 'absents'
                 }`}
+                // style={{ background: attendanceLabels[log.type].text }}
               >
-                {log.late_checkin ? `Late ${log.late_checkin_time}` : log.type}
+                {log.late_checkin
+                  ? `Late ${log.late_checkin_time}`
+                  : attendanceLabels[log.type].label}
               </div>
             </span>
           </div>
@@ -344,7 +415,7 @@ function MonthlyReport() {
                 >
                   {log.late_checkin
                     ? `Late ${log.late_checkin_time}`
-                    : log.type}
+                    : attendanceLabels[log.type].label}
                 </div>
               </div>
               <div className="log-times">

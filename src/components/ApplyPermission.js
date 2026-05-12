@@ -142,7 +142,9 @@ function ApplyPermission() {
           <button className="down-btn" onClick={() => navigate('/permission')}>
             <MdKeyboardArrowLeft />
           </button>
-          <h3 style={{ fontWeight: 600, fontSize:'16px' }}>Apply Permission</h3>
+          <h3 style={{ fontWeight: 600, fontSize: '16px' }}>
+            Apply Permission
+          </h3>
         </div>
       </div>
 
