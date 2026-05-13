@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import '../styles/MonthOverview.css';
 import { MdKeyboardArrowLeft } from 'react-icons/md';
 import Lottie from 'lottie-react';
 import animationData from '../lottie/Completing Tasks.json';
 import { useNavigate } from 'react-router-dom';
-// import loading from '../lottie/loading.json';
+import { fetchAttendanceByMonthAPI } from '../helper.js/api';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -19,15 +19,38 @@ const LEGEND = [
   { dotClass: 'mo-legend__dot--local', text: 'Local Holiday' },
 ];
 
+const STATUS_CONFIG = {
+  present: { label: 'PRESENT', color: '#22c55e' },
+  late: { label: 'LATE', color: '#06b6d4' },
+  absent: { label: 'ABSENT', color: '#9ca3af' },
+  leave: { label: 'LEAVE', color: '#0ea5e9' },
+  'sick-leave': { label: 'SICK LEAVE', color: '#f43f5e' },
+  'casual-leave': { label: 'CASUAL LEAVE', color: '#8b5cf6' },
+  lop: { label: 'LOSS OF PAY', color: '#ef4444' },
+  onduty: { label: 'ON DUTY', color: '#3b82f6' },
+  'local-holiday': { label: 'LOCAL HOLIDAY', color: '#166534' },
+  'common-holiday': { label: 'COMMON HOLIDAY', color: '#7c3aed' },
+  'weekend-holiday': { label: 'WEEKEND HOLIDAY', color: '#f97316' },
+  today: { label: 'TODAY', color: '#111111' },
+};
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function isWeekend(date) {
   const d = date.getDay();
-  return d === 0 || d === 6;
+  return d === 0;
 }
 
 function formatMonthYear(year, month) {
   return new Date(year, month, 1).toLocaleString('en-US', {
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+function formatFullDate(year, month, day) {
+  return new Date(year, month, day).toLocaleDateString('en-GB', {
+    day: '2-digit',
     month: 'long',
     year: 'numeric',
   });
@@ -40,23 +63,14 @@ function toKey(date) {
   return `${y}-${m}-${d}`;
 }
 
-/**
- * Build a flat 42-cell grid (6 rows × 7 cols) for the given year/month.
- * Looks up attendance from `attendanceMap` (Map<"YYYY-MM-DD", {status, label}>).
- * Weekend days → "weekend-holiday" automatically.
- * Today → "today".
- * No entry + past/future weekday → "absent".
- */
 function buildCalendarCells(year, month, attendanceMap) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-
   const cells = [];
 
-  // Leading days from previous month
   for (let i = 0; i < firstDay.getDay(); i++) {
     const d = new Date(year, month, 1 - (firstDay.getDay() - i));
     cells.push({
@@ -64,37 +78,62 @@ function buildCalendarCells(year, month, attendanceMap) {
       status: 'outside',
       label: null,
       isOutside: true,
+      dateObj: d,
     });
   }
 
-  // Days in current month
   for (let d = 1; d <= lastDay.getDate(); d++) {
     const date = new Date(year, month, d);
     date.setHours(0, 0, 0, 0);
     const key = toKey(date);
     const isToday = date.getTime() === today.getTime();
 
-    let status;
-    let label = null;
+    let status,
+      label = null;
 
     if (isToday) {
       status = 'today';
       label = 'Today';
-    } else if (attendanceMap.has(key)) {
-      const entry = attendanceMap.get(key);
-      status = entry.status;
-      label = entry.label || null;
-    } else if (isWeekend(date)) {
-      status = 'weekend-holiday';
-      label = 'W-Holiday';
     } else {
-      status = 'absent';
+      const entry = attendanceMap.find((item) => item.date === key);
+
+      if (entry) {
+        if (entry.type === 'PRESENT') {
+          if (entry.late_checkin) {
+            status = 'late';
+            label = `Late ${entry.late_checkin_time}`;
+          } else {
+            status = 'present';
+            label = 'PRESENT';
+          }
+        } else if (entry.type === 'W-H') {
+          status = 'weekend-holiday';
+          label = 'W-Holiday';
+        } else if (entry.type === 'C-H') {
+          status = 'common-holiday';
+          label = 'C-Holiday';
+        } else if (entry.type === 'L-H') {
+          status = 'local-holiday';
+          label = 'L-Holiday';
+        } else if (entry.type === 'LEAVE') {
+          status = 'leave';
+          label = 'LEAVE';
+        } else {
+          status = 'absent';
+          label = 'ABSENT';
+        }
+      } else if (isWeekend(date)) {
+        status = 'weekend-holiday';
+        label = 'W-Holiday';
+      } else {
+        status = 'absent';
+        label = null;
+      }
     }
 
-    cells.push({ day: d, status, label, isOutside: false });
+    cells.push({ day: d, status, label, isOutside: false, dateObj: date, key });
   }
 
-  // Trailing days from next month
   const remaining = 42 - cells.length;
   for (let i = 1; i <= remaining; i++) {
     const d = new Date(year, month + 1, i);
@@ -103,26 +142,14 @@ function buildCalendarCells(year, month, attendanceMap) {
       status: 'outside',
       label: null,
       isOutside: true,
+      dateObj: d,
     });
   }
 
   return cells;
 }
 
-// ── Sample attendance data ───────────────────────────────────────────────────
-// Replace with real API/prop data. Keys: "YYYY-MM-DD"
-// Valid statuses: "present" | "late" | "leave" | "common-holiday" | "local-holiday"
-
-const SAMPLE_ATTENDANCE = new Map([
-  ['2026-05-01', { status: 'common-holiday', label: 'C-Holiday' }],
-  ['2026-05-02', { status: 'present', label: 'PRESENT' }],
-  ['2026-05-04', { status: 'present', label: 'PRESENT' }],
-  ['2026-05-05', { status: 'present', label: 'PRESENT' }],
-  ['2026-05-06', { status: 'late', label: 'Late 00:06' }],
-  ['2026-05-07', { status: 'late', label: 'Late 00:01' }],
-]);
-
-// ── Sub-components ───────────────────────────────────────────────────────────
+// ── Sub-components ────────────────────────────────────────────────────────────
 
 function MoMonthNav({ title, onPrev, onNext }) {
   return (
@@ -158,16 +185,26 @@ function MoWeekdays() {
   );
 }
 
-function MoDay({ day, status, label }) {
+function MoDay({ day, status, label, isOutside, isSelected, onClick }) {
+  if (isOutside) {
+    return (
+      <div className="mo-day mo-day--outside">
+        <span className="mo-day__number">{day}</span>
+      </div>
+    );
+  }
   return (
-    <div className={`mo-day mo-day--${status}`}>
+    <div
+      className={`mo-day mo-day--${status} ${isSelected ? 'mo-day--selected' : ''}`}
+      onClick={onClick}
+    >
       <span className="mo-day__number">{day}</span>
       {label && <span className="mo-day__label">{label}</span>}
     </div>
   );
 }
 
-function MoGrid({ cells }) {
+function MoGrid({ cells, selectedKey, onSelect }) {
   return (
     <div className="mo-grid">
       {cells.map((cell, idx) => (
@@ -176,6 +213,9 @@ function MoGrid({ cells }) {
           day={cell.day}
           status={cell.status}
           label={cell.label}
+          isOutside={cell.isOutside}
+          isSelected={cell.key === selectedKey}
+          onClick={cell.isOutside ? undefined : () => onSelect(cell)}
         />
       ))}
     </div>
@@ -195,33 +235,169 @@ function MoLegend() {
   );
 }
 
-// ── Main Component ───────────────────────────────────────────────────────────
+// ── Day Detail Panel ──────────────────────────────────────────────────────────
 
-export default function MonthOverview({ attendanceData = SAMPLE_ATTENDANCE }) {
+function DayDetail({ selectedCell, attendanceMap, year, month, onClose }) {
+  if (!selectedCell) {
+    return (
+      <div className="mo-detail mo-detail--empty">
+        <div className="mo-detail__empty-icon">📅</div>
+        <p className="mo-detail__empty-text">Select a date to view details</p>
+      </div>
+    );
+  }
+
+  const key = selectedCell.key;
+  const entry = attendanceMap.find((item) => item.date === key);
+  const status = selectedCell.status;
+  const config = STATUS_CONFIG[status] || STATUS_CONFIG['absent'];
+  const fullDate = formatFullDate(year, month, selectedCell.day);
+
+  const formatTo12Hour = (timeStr) => {
+    if (
+      !timeStr ||
+      timeStr === '-:--:--' ||
+      timeStr === '--:--:--' ||
+      timeStr === '--:--'
+    )
+      return '--:--:--';
+
+    const date = new Date(`1970-01-01T${timeStr}`);
+
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit', // ✅ include seconds
+      hour12: true,
+    });
+  };
+
+  return (
+    <div className="mo-detail">
+      {/* Close button — mobile only */}
+      <button className="mo-detail__close" onClick={onClose} aria-label="Close">
+        ✕
+      </button>
+
+      {/* Status header */}
+      <div className="mo-detail__header" style={{ background: config.color }}>
+        <div className="mo-detail__date">{fullDate}</div>
+        <div className="mo-detail__badge">{config.label}</div>
+      </div>
+
+      {/* Detail rows */}
+      {entry ? (
+        <div className="mo-detail__body">
+          <div className="mo-detail__row">
+            <div className="mo-detail__col">
+              <span className="mo-detail__col-label">Check In</span>
+              <span className="mo-detail__col-value">
+                {formatTo12Hour(entry.check_in)}
+              </span>
+            </div>
+            <div className="mo-detail__col">
+              <span className="mo-detail__col-label">Check Out</span>
+              <span className="mo-detail__col-value">
+                {formatTo12Hour(entry.check_out)}
+              </span>
+            </div>
+          </div>
+          <div className="mo-detail__divider" />
+          <div className="mo-detail__row">
+            <div className="mo-detail__col">
+              <span className="mo-detail__col-label">Break In</span>
+              <span className="mo-detail__col-value">
+                {formatTo12Hour(entry.break_in)}
+              </span>
+            </div>
+            <div className="mo-detail__col">
+              <span className="mo-detail__col-label">Break Out</span>
+              <span className="mo-detail__col-value">
+                {formatTo12Hour(entry.break_out)}
+              </span>
+            </div>
+          </div>
+          <div className="mo-detail__divider" />
+          <div className="mo-detail__row">
+            <div className="mo-detail__col">
+              <span className="mo-detail__col-label">Break Minutes</span>
+              <span className="mo-detail__col-value">
+                {entry.total_break_minutes}
+              </span>
+            </div>
+            <div className="mo-detail__col">
+              <span className="mo-detail__col-label">Late Minutes</span>
+              <span className="mo-detail__col-value">
+                {entry.late_checkin_time}
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="mo-detail__no-data">
+          <span className="mo-detail__no-data-icon">🗓</span>
+          <p>No data available for this day</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
+
+export default function MonthOverview() {
   const navigate = useNavigate();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
+  const [selectedCell, setSelectedCell] = useState(null);
+
+  const [calanderData, setCalanderData] = useState([]);
+
+  useEffect(() => {
+    async function monthlyReport() {
+      // setLoadingState(true); // start loading
+
+      try {
+        const data = await fetchAttendanceByMonthAPI({
+          month: month + 1,
+          year: year,
+        });
+        setCalanderData(
+          Array.isArray(data?.data.attendance) ? data.data.attendance : []
+        );
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        // setLoadingState(false); // stop loading
+      }
+    }
+
+    monthlyReport();
+  }, [year, month]);
 
   const goPrev = useCallback(() => {
+    setSelectedCell(null);
     if (month === 0) {
       setMonth(11);
       setYear((y) => y - 1);
-    } else {
-      setMonth((m) => m - 1);
-    }
+    } else setMonth((m) => m - 1);
   }, [month]);
 
   const goNext = useCallback(() => {
+    setSelectedCell(null);
     if (month === 11) {
       setMonth(0);
       setYear((y) => y + 1);
-    } else {
-      setMonth((m) => m + 1);
-    }
+    } else setMonth((m) => m + 1);
   }, [month]);
 
-  const cells = buildCalendarCells(year, month, attendanceData);
+  const handleSelectCell = useCallback((cell) => {
+    setSelectedCell(cell);
+  }, []);
+
+  const cells = buildCalendarCells(year, month, calanderData);
   const title = formatMonthYear(year, month);
 
   return (
@@ -257,18 +433,42 @@ export default function MonthOverview({ attendanceData = SAMPLE_ATTENDANCE }) {
             </div>
           </div>
         </div>
+
+        {/* ── Calendar + Detail side by side (desktop) ── */}
         <div className="mo-calender">
           <div className="mo-calendar-wrapper">
             <MoMonthNav title={title} onPrev={goPrev} onNext={goNext} />
             <MoWeekdays />
-            <MoGrid cells={cells} />
+            <MoGrid
+              cells={cells}
+              selectedKey={selectedCell?.key}
+              onSelect={handleSelectCell}
+            />
             <MoLegend />
           </div>
 
-          {/* <hr className="mo-divider" /> */}
-
-          <p className="mo-no-data">Data not available</p>
+          {/* Desktop detail panel */}
+          <div className="mo-detail-wrapper">
+            <DayDetail
+              selectedCell={selectedCell}
+              attendanceMap={calanderData}
+              year={year}
+              month={month}
+              onClose={() => setSelectedCell(null)}
+            />
+          </div>
         </div>
+
+        {/* Mobile overlay */}
+        {/* {mobileDetailOpen && (
+          <MobileDetailOverlay
+            selectedCell={selectedCell}
+            attendanceMap={attendanceData}
+            year={year}
+            month={month}
+            onClose={handleCloseOverlay}
+          />
+        )} */}
       </div>
     </div>
   );

@@ -275,8 +275,8 @@ function MonthlyReport() {
             <button
               className="excel-btn"
               onClick={() => {
-                // navigate('/month-overview');
-                alert('Calendar feature is coming soon 🚀');
+                navigate('/month-overview');
+                // alert('Calendar feature is coming soon 🚀');
               }}
             >
               <IoCalendarOutline />
